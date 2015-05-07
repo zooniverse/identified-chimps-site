@@ -1,0 +1,29 @@
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <% for group, i in @chimps: %>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="heading<%- i %>">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%- i %>" aria-expanded="true" aria-controls="collapse<%- i %>">
+            <%- group['name'] %>
+          </a>
+        </h4>
+      </div>
+      <div id="collapse<%- i %>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading<%- i %>">
+        <div class="panel-body">
+          <table>
+            <tr>
+              <th width="200">Subject ID</th>
+              <th>Talk link</th>
+            </tr>
+            <% for subject, i in group['identified_subjects']: %>
+              <tr>
+                <td><%- subject %></td>
+                <td><a href="http://talk.chimpandsee.org/#/subjects/<%- subject %>" target="_blank">http://talk.chimpandsee.org/#/subjects/<%- subject %></td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

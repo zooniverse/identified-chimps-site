@@ -1,0 +1,13 @@
+{
+  "name": "identified-chimps-site",
+  "version": "0.1.0",
+  "dependencies": {
+    "haw": "~0.5.0",
+    "publisssh": "0.2.6",
+    "whatwg-fetch": "~0.8.1"
+  },
+  "scripts": {
+    "start": "haw serve",
+    "deploy": "haw build && publisssh ./build zooniverse-static/www.chimpandsee.org/identified-chimps && rm -rf ./build"
+  }
+}
