@@ -11,8 +11,10 @@ fetch(config['data_file_location']).then((res) -> res.json()).then (json) ->
   else
     data = json
 
-  chimpsTable = require('./views/chimps-accordian')({ chimps: data })
+  accordianContainer = document.querySelector('#species-accordians-container')
+  config['speciesToTrack'].forEach (species) ->
+    table = require('./views/accordian')({ data, species })
+    accordianContainer.insertAdjacentHTML 'afterbegin', table
 
-  chimpsDataContainer = document.querySelector('#chimps-accordian-container')
-  chimpsDataContainer.innerHTML = chimpsTable
-  setTimeout -> $(chimpsDataContainer).collapse()
+  setTimeout ->
+    $('.accordian').collapse()
