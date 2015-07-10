@@ -14,6 +14,18 @@ def species_key(species)
   "#{ species.gsub(/[\(\)]/,'') }"
 end
 
+def tags_for(db, zooniverse_id)
+  db['discussions'].aggregate([
+      {'$match': {'focus._id': zooniverse_id, 'comments.$.tags': { '$ne': [] }}},
+      {'$project': {_id: 0, comments: 1}},
+      {'$unwind': '$comments'},
+      {'$project': {tags: '$comments.tags'}},
+      {'$unwind': '$tags'},
+      {'$group': {_id: '$tags', count: { '$sum': 1 }}},
+      {'$sort': {count: -1}}
+    ])
+end
+
 config_file_path = ARGV[0] || File.dirname(__FILE__) + '/config.yml'
 config = YAML.load File.read config_file_path
 
@@ -40,7 +52,7 @@ now = Time.now
 puts "Querying mongo..."
 
 aggregate_species_hash = {}
-db['chimp_subjects'].find({ state: 'complete' }, read: :secondary).each do |document|
+db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).limit(500).each do |document|
   group_id = document['group']['zooniverse_id']
   group_name = document['group']['name']
   classification_count = document['classification_count']
@@ -53,7 +65,12 @@ db['chimp_subjects'].find({ state: 'complete' }, read: :secondary).each do |docu
   species_to_track.each do |species|
     if species_count(document, species) >= (classification_count / 2)
       aggregate_species_hash[group_id][species_key(species)] ||= []
-      aggregate_species_hash[group_id][species_key(species)] << document['zooniverse_id']
+      aggregate_species_hash[group_id][species_key(species)] << {
+        zooniverse_id: document['zooniverse_id'],
+        tags: tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] },
+        file: document['metadata']['file'],
+        start_time: document['metadata']['start_time']
+      }
     end
   end
 end
@@ -64,7 +81,7 @@ sorted_groups = aggregate_species_hash.values.sort_by { |group| group['id'] }
 sorted_groups.each do |group|
   species_to_track.each do |species|
     if group.has_key?(species_key(species))
-      group[species_key(species)].sort!
+      group[species_key(species)].sort!{|x, y| x['zooniverse_id'] <=> y['zooniverse_id']}
     end
   end
 end
