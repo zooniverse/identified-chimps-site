@@ -52,7 +52,7 @@ now = Time.now
 puts "Querying mongo..."
 
 aggregate_species_hash = {}
-db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).limit(500).each do |document|
+db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).each do |document|
   group_id = document['group']['zooniverse_id']
   group_name = document['group']['name']
   classification_count = document['classification_count']
