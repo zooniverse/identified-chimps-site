@@ -7,7 +7,11 @@ include Mongo
 species_to_track = %w(chimpanzee other-(primate))
 
 def species_count(subject, species)
-  subject['metadata']['counters'][species] || 0
+  if subject['metadata']['counters'] != nil
+    subject['metadata']['counters'][species] || 0
+  else
+    0
+  end
 end
 
 def species_key(species)
