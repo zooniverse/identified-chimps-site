@@ -10,7 +10,7 @@ def species_count(subject, species)
   if subject['metadata']['counters'] != nil
     subject['metadata']['counters'][species] || 0
   else
-    0
+    nil
   end
 end
 
@@ -67,7 +67,8 @@ db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).each do |docum
   aggregate_species_hash[group_id]['name'] ||= group_name
 
   species_to_track.each do |species|
-    if species_count(document, species) >= (classification_count / 2)
+    count = species_count(document, species)
+    if count != nil and classification_count > 0 and count >= (classification_count / 2)
       aggregate_species_hash[group_id][species_key(species)] ||= []
       aggregate_species_hash[group_id][species_key(species)] << {
         zooniverse_id: document['zooniverse_id'],
