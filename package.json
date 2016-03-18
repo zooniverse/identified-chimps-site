@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "dependencies": {
     "haw": "~0.5.0",
-    "publisssh": "0.2.6",
+    "publisssh": "~1.1.0",
     "whatwg-fetch": "~0.8.1"
   },
   "scripts": {
