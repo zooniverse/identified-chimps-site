@@ -1,5 +1,5 @@
 config =
-  data_file_location: 'http://www.chimpandsee.org/identified-chimps/identified-species.json'
+  data_file_location: 'https://www.chimpandsee.org/identified-chimps/identified-species.json'
   is_scientist: 'no' # This doesn't do anything yet.
   speciesToTrack: ['chimpanzee', 'other-primate']
 
