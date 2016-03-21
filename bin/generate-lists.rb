@@ -73,7 +73,6 @@ db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).each do |docum
       aggregate_species_hash[group_id][species_key(species)] << {
         zooniverse_id: document['zooniverse_id'],
         tags: tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] },
-        file: document['metadata']['file'],
         start_time: document['metadata']['start_time']
       }
     end
