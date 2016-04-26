@@ -77,7 +77,7 @@ db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).each do |docum
   species_to_track.each do |species|
     count = species_count(document, species)
     blanks = blank_count(document)
-    if count != nil and classification_count > 0 and count >= ((classification_count - blanks) / 2)
+    if count != nil and blanks != nil and classification_count > 0 and count >= ((classification_count - blanks) / 2)
       aggregate_species_hash[group_id][species_key(species)] ||= []
       aggregate_species_hash[group_id][species_key(species)] << {
         zooniverse_id: document['zooniverse_id'],
