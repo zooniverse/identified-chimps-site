@@ -14,6 +14,14 @@ def species_count(subject, species)
   end
 end
 
+def blank_count(subject)
+  if subject['metadata']['counters'] != nil
+    subject['metadata']['counters']['blank'] || 0
+  else
+    nil
+  end
+end
+
 def species_key(species)
   "#{ species.gsub(/[\(\)]/,'') }"
 end
@@ -68,7 +76,8 @@ db['chimp_subjects'].find({ state: 'complete'}, read: :secondary).each do |docum
 
   species_to_track.each do |species|
     count = species_count(document, species)
-    if count != nil and classification_count > 0 and count >= (classification_count / 2)
+    blanks = blank_count(document)
+    if count != nil and blanks != nil and classification_count > 0 and count >= ((classification_count - blanks) / 2)
       aggregate_species_hash[group_id][species_key(species)] ||= []
       aggregate_species_hash[group_id][species_key(species)] << {
         zooniverse_id: document['zooniverse_id'],
