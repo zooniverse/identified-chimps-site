@@ -1,7 +1,7 @@
 config =
   data_file_location: 'https://www.chimpandsee.org/identified-chimps/identified-species.json'
   is_scientist: 'no' # This doesn't do anything yet.
-  speciesToTrack: ['chimpanzee', 'other-primate']
+  speciesToTrack: ['chimpanzee', 'gorilla', 'other-primate']
 
 pairs = location.search.slice(1).split(',')
 for pair in pairs
