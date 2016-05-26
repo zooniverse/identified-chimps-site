@@ -1,6 +1,6 @@
 # identified-chimps-site
 
-Site that lists all [Chimp & See](http://www.chimpandsee.org) videos that have been identified by the Zooniverse community as having chimpanzees in them. Viewable at www.chimpandsee.org/identified-chimps. "Identified" for this use case means a majority of classifications have tagged the presence of a chimp.
+Site that lists all [Chimp & See](http://www.chimpandsee.org) videos that have been identified by the Zooniverse community as having chimpanzees, gorillas, or other primates in them. Viewable at www.chimpandsee.org/identified-chimps. Threshold for entry to the list varies by species.
 
 Requires node. To run locally:
 
