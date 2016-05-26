@@ -49,7 +49,7 @@ def mod_tags_for(db, zooniverse_id)
       {'$match': {'focus._id': zooniverse_id, 'comments.$.tags': { '$ne': [] }}},
       {'$project': {_id: 0, comments: 1}},
       {'$unwind': '$comments'},
-      {'$match': {'$comments.user_name': {'$in': moderators}}}
+      {'$match': {'$comments.user_name': {'$in': moderators}}},
       {'$project': {tags: '$comments.tags'}},
       {'$unwind': '$tags'},
       {'$group': {_id: '$tags', count: { '$sum': 1 }}},
@@ -135,7 +135,7 @@ db['chimp_subjects'].find({}, read: :secondary).each do |document|
        add_to_hash(aggregate_species_hash, document, 'chimpanzee')
       end
       
-      if gorilla_sites.include?(site_name) and !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'gorilla') or (is_verified(document) and gorilla_count >= 2 and primate_count <= 2 * gorilla_count)))
+      if gorilla_sites.include?(site_name) and !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'gorilla') or (is_verified(document) and gorilla_count >= 2 and primate_count <= 2 * gorilla_count))
        add_to_hash(aggregate_species_hash, document, 'gorilla')
       end
     end
