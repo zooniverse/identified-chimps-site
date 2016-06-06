@@ -4,9 +4,9 @@ require 'mongo'
 require 'yaml'
 include Mongo
 
-species_to_track = %w(chimpanzee gorilla other-(primate))
-gorilla_sites = %w(restless-star)
-moderators = %w(MimiA NuriaM maureenmccarthy northernlimitptv PauDG akalan Quia ksigler yshish AnLand jwidness)
+$species_to_track = %w(chimpanzee gorilla other-(primate))
+$gorilla_sites = %w(restless-star)
+$moderators = %w(MimiA NuriaM maureenmccarthy northernlimitptv PauDG akalan Quia ksigler yshish AnLand jwidness)
 
 def species_count(subject, species)
   if subject['metadata']['counters'] != nil
@@ -34,26 +34,26 @@ end
 
 def tags_for(db, zooniverse_id)
   db['discussions'].aggregate([
-      {'$match': {'focus._id': zooniverse_id, 'comments.$.tags': { '$ne': [] }}},
-      {'$project': {_id: 0, comments: 1}},
-      {'$unwind': '$comments'},
-      {'$project': {tags: '$comments.tags'}},
-      {'$unwind': '$tags'},
-      {'$group': {_id: '$tags', count: { '$sum': 1 }}},
-      {'$sort': {count: -1}}
+      {:$match => {'focus._id' => zooniverse_id, 'comments.$.tags' => { '$ne' => [] }}},
+      {:$project => {'_id' => 0, 'comments' => 1}},
+      {:$unwind => '$comments'},
+      {:$project => {'tags' => '$comments.tags'}},
+      {:$unwind => '$tags'},
+      {:$group => {'_id' => '$tags', 'count' => { :$sum => 1 }}},
+      {:$sort => {count: -1}}
     ])
 end
 
 def mod_tags_for(db, zooniverse_id)
   db['discussions'].aggregate([
-      {'$match': {'focus._id': zooniverse_id, 'comments.$.tags': { '$ne': [] }}},
-      {'$project': {_id: 0, comments: 1}},
-      {'$unwind': '$comments'},
-      {'$match': {'$comments.user_name': {'$in': moderators}}},
-      {'$project': {tags: '$comments.tags'}},
-      {'$unwind': '$tags'},
-      {'$group': {_id: '$tags', count: { '$sum': 1 }}},
-      {'$sort': {count: -1}}
+      {:$match => {'focus._id' => zooniverse_id, 'comments.$.tags' => { :$ne => [] }}},
+      {:$project => {'_id' => 0, 'comments' => 1}},
+      {:$unwind => '$comments'},
+      {:$match => {'$comments.user_name' => {:$in => $moderators}}},
+      {:$project => {'tags' => '$comments.tags'}},
+      {:$unwind => '$tags'},
+      {:$group => {'_id' => '$tags', 'count' => { :$sum => 1 }}},
+      {:$sort => {'count' => -1}}
     ])
 end
 
@@ -66,7 +66,7 @@ def check_list_for_string(lst, str)
   return false
 end
 
-def add_to_hash(hash, document, species)
+def add_to_hash(db, hash, document, species)
   group_id = document['group']['zooniverse_id']
   group_name = document['group']['name']
 
@@ -109,44 +109,47 @@ now = Time.now
 puts "Querying mongo..."
 
 sites_to_track = db['chimp_groups'].aggregate([
-      {'$match': {'_id': '$name', 'state': { '$in': ['complete','active'] }}}
-      ]).collect{ |site| site['_id'] }
+      {:$match => {'state' => { :$in => ['complete','active'] }}}
+      ]).collect{ |site| site['name'] }
 sites_to_track = sites_to_track - ['frosty-sky-3']
 
 aggregate_species_hash = {}
 db['chimp_subjects'].find({}, read: :secondary).each do |document|
   site_name = document['group']['name']
+  classification_count = document['classification_count']
   if sites_to_track.include?(site_name)
     mod_tags = mod_tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] }
-    if (mod_tags.include?('chimp') or mod_tags.include?('gorilla')) 
+    if (mod_tags.include?('chimp') or mod_tags.include?('gorilla'))
       if mod_tags.include?('chimp')
-        add_to_hash(aggregate_species_hash, document, 'chimpanzee',)
+        add_to_hash(db, aggregate_species_hash, document, 'chimpanzee',)
       end
-      if gorilla_sites.include?(site_name) and mod_tags.include?('gorilla')
-        add_to_hash(aggregate_species_hash, document, 'gorilla')
+      if $gorilla_sites.include?(site_name) and mod_tags.include?('gorilla')
+        add_to_hash(db, aggregate_species_hash, document, 'gorilla')
       end
     else
       all_tags = tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] }
       chimp_count = species_count(document, 'chimpanzee')
       gorilla_count = species_count(document, 'gorilla')
       primate_count = species_count(document, 'other-(primate)')
-      
+
       if !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'chimp') or (is_verified(document) and chimp_count >= 2 and primate_count <= 2 * chimp_count))
-       add_to_hash(aggregate_species_hash, document, 'chimpanzee')
+       add_to_hash(db, aggregate_species_hash, document, 'chimpanzee')
       end
-      
-      if gorilla_sites.include?(site_name) and !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'gorilla') or (is_verified(document) and gorilla_count >= 2 and primate_count <= 2 * gorilla_count))
-       add_to_hash(aggregate_species_hash, document, 'gorilla')
+
+      if $gorilla_sites.include?(site_name) and !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'gorilla') or (is_verified(document) and gorilla_count >= 2 and primate_count <= 2 * gorilla_count))
+       add_to_hash(db, aggregate_species_hash, document, 'gorilla')
       end
     end
-      
-    (species_to_track - ['chimpanzee', 'gorilla']).each do |species|
+
+    ($species_to_track - ['chimpanzee', 'gorilla']).each do |species|
       count = species_count(document, species)
       blanks = blank_count(document)
       if document['state'] == 'complete' and is_verified(document) and count >= ((classification_count - blanks) / 2)
-        add_to_hash(aggregate_species_hash, document, species)
+        add_to_hash(db, aggregate_species_hash, document, species)
       end
     end
+  else
+    puts "Skipping unknown site #{site_name}"
   end
 end
 
@@ -154,7 +157,7 @@ puts "Query took #{ Time.now - now }"
 
 sorted_groups = aggregate_species_hash.values.sort_by { |group| group['id'] }
 sorted_groups.each do |group|
-  species_to_track.each do |species|
+  $species_to_track.each do |species|
     if group.has_key?(species_key(species))
       group[species_key(species)].sort!{|x, y| x['zooniverse_id'] <=> y['zooniverse_id']}
     end
