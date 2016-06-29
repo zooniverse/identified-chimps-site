@@ -1,25 +1,29 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    aws-sdk (2.0.41)
-      aws-sdk-resources (= 2.0.41)
-    aws-sdk-core (2.0.41)
+    aws-sdk (2.0.48)
+      aws-sdk-resources (= 2.0.48)
+    aws-sdk-core (2.0.48)
       builder (~> 3.0)
       jmespath (~> 1.0)
       multi_json (~> 1.0)
-    aws-sdk-resources (2.0.41)
-      aws-sdk-core (= 2.0.41)
+    aws-sdk-resources (2.0.48)
+      aws-sdk-core (= 2.0.48)
     bson (1.12.1)
+    bson_ext (1.12.1)
+      bson (~> 1.12.1)
     builder (3.2.2)
-    jmespath (1.0.2)
-      multi_json (~> 1.0)
+    jmespath (1.2.4)
+      json_pure (>= 1.8.1)
+    json_pure (1.8.3)
     mongo (1.12.1)
       bson (= 1.12.1)
-    multi_json (1.11.0)
+    multi_json (1.12.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   aws-sdk (~> 2.0.0)
+  bson_ext (~> 1.12)
   mongo (= 1.12.1)
