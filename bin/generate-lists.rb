@@ -144,7 +144,7 @@ db['chimp_subjects'].find({}, read: :secondary).each do |document|
     ($species_to_track - ['chimpanzee', 'gorilla']).each do |species|
       count = species_count(document, species)
       blanks = blank_count(document)
-      if document['state'] == 'complete' and is_verified(document) and count >= ((classification_count - blanks) / 2)
+      if document['state'] == 'complete' and is_verified(document) and count >= 2 and count >= ((classification_count - blanks) / 2)
         add_to_hash(db, aggregate_species_hash, document, species)
       end
     end
