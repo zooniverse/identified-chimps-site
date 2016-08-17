@@ -159,7 +159,7 @@ sorted_groups = aggregate_species_hash.values.sort_by { |group| group['id'] }
 sorted_groups.each do |group|
   $species_to_track.each do |species|
     if group.has_key?(species_key(species))
-      group[species_key(species)].sort!{|x, y| x['zooniverse_id'] <=> y['zooniverse_id']}
+      group[species_key(species)].sort!{|x, y| x[:zooniverse_id] <=> y[:zooniverse_id]}
     end
   end
 end
