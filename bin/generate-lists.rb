@@ -79,6 +79,7 @@ def add_to_hash(db, hash, document, species)
   hash[group_id][species_key(species)] << {
     zooniverse_id: document['zooniverse_id'],
     tags: tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] },
+    file: document['metadata']['file'],
     start_time: document['metadata']['start_time']
   }
 end
@@ -160,6 +161,7 @@ sorted_groups.each do |group|
   $species_to_track.each do |species|
     if group.has_key?(species_key(species))
       group[species_key(species)].sort!{|x, y| x[:zooniverse_id] <=> y[:zooniverse_id]}
+      group[species_key(species)].map!{|x| x.except!(:file)}
     end
   end
 end
