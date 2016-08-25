@@ -161,7 +161,7 @@ sorted_groups.each do |group|
   $species_to_track.each do |species|
     if group.has_key?(species_key(species))
       group[species_key(species)].sort!{|x, y| x[:file] <=> y[:file]}
-      group[species_key(species)].map!{|x| x.delete(:file)}
+      group[species_key(species)].map{|x| x.delete(:file)}
     end
   end
 end
