@@ -148,8 +148,6 @@ db['chimp_subjects'].find({}, read: :secondary).each do |document|
         add_to_hash(db, aggregate_species_hash, document, species)
       end
     end
-  else
-    puts "Skipping unknown site #{site_name}"
   end
 end
 
