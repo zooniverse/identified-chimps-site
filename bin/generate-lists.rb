@@ -46,10 +46,9 @@ end
 
 def mod_tags_for(db, zooniverse_id)
   db['discussions'].aggregate([
-      {:$match => {'focus._id' => zooniverse_id, 'comments.$.tags' => { :$ne => [] }}},
+      {:$match => {'focus._id' => zooniverse_id, 'comments.$.tags' => { :$ne => [] }, 'comments.user_name' => {:$in => $moderators}}},
       {:$project => {'_id' => 0, 'comments' => 1}},
       {:$unwind => '$comments'},
-      {:$match => {'$comments.user_name' => {:$in => $moderators}}},
       {:$project => {'tags' => '$comments.tags'}},
       {:$unwind => '$tags'},
       {:$group => {'_id' => '$tags', 'count' => { :$sum => 1 }}},
