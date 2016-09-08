@@ -6,7 +6,7 @@ include Mongo
 
 $species_to_track = %w(chimpanzee gorilla other-(primate))
 $gorilla_sites = %w(restless-star)
-$moderators = %w(MimiA NuriaM maureenmccarthy northernlimitptv PauDG akalan Quia ksigler yshish AnLand jwidness)
+$moderators = %w(MimiA NuriaM maureenmccarthy northernlimitptv PauDG akalan Silke_Atmaca Quia ksigler yshish AnLand jwidness)
 
 def species_count(subject, species)
   if subject['metadata']['counters'] != nil
