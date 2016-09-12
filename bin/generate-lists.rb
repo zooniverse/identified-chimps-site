@@ -120,9 +120,9 @@ db['chimp_subjects'].find({}, read: :secondary).each do |document|
   classification_count = document['classification_count']
   if sites_to_track.include?(site_name)
     mod_tags = mod_tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] }
-    if (mod_tags.include?('chimp') or mod_tags.include?('gorilla'))
-      if mod_tags.include?('chimp')
-        add_to_hash(db, aggregate_species_hash, document, 'chimpanzee',)
+    if (check_list_for_string(mod_tags, 'chimp') or mod_tags.include?('gorilla'))
+      if (check_list_for_string(mod_tags, 'chimp')
+        add_to_hash(db, aggregate_species_hash, document, 'chimpanzee')
       end
       if $gorilla_sites.include?(site_name) and mod_tags.include?('gorilla')
         add_to_hash(db, aggregate_species_hash, document, 'gorilla')
@@ -158,7 +158,7 @@ sorted_groups = aggregate_species_hash.values.sort_by { |group| group['id'] }
 sorted_groups.each do |group|
   $species_to_track.each do |species|
     if group.has_key?(species_key(species))
-      group[species_key(species)].sort!{|x, y| x[:file] <=> y[:file]}
+      group[species_key(species)].sort!{|x, y| (x[:file] <=> y[:file]).nonzero? || x[:start_time] <=> y[:start_time]}
       group[species_key(species)].map{|x| x.delete(:file)}
     end
   end
