@@ -121,7 +121,7 @@ db['chimp_subjects'].find({}, read: :secondary).each do |document|
   if sites_to_track.include?(site_name)
     mod_tags = mod_tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] }
     if (check_list_for_string(mod_tags, 'chimp') or mod_tags.include?('gorilla'))
-      if (check_list_for_string(mod_tags, 'chimp')
+      if (check_list_for_string(mod_tags, 'chimp'))
         add_to_hash(db, aggregate_species_hash, document, 'chimpanzee')
       end
       if $gorilla_sites.include?(site_name) and mod_tags.include?('gorilla')
