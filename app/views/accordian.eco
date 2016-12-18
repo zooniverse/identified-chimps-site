@@ -16,6 +16,7 @@
                 <th width="200">Subject ID</th>
                 <th>Talk link</th>
                 <th>Tags</th>
+                <th>Video Number</th>
                 <th>Start Time</th>
               </tr>
               <% for subject, i in group[@species]: %>
@@ -23,6 +24,7 @@
                   <td><%- subject['zooniverse_id'] %></td>
                   <td><a href="http://talk.chimpandsee.org/#/subjects/<%- subject['zooniverse_id'] %>" target="_blank">http://talk.chimpandsee.org/#/subjects/<%- subject['zooniverse_id'] %></td>
                   <td><%- subject['tags'].join(', ') %></td>
+                  <td><%- subject['video_num'] %></td>
                   <td><%- subject['start_time'] %></td>
                 </tr>
               <% end %>
