@@ -80,6 +80,7 @@ def add_to_hash(db, hash, document, species)
     zooniverse_id: document['zooniverse_id'],
     tags: tags_for(db, document['zooniverse_id']).collect{ |tag| tag['_id'] },
     file: document['metadata']['file'],
+    video_num: document['metadata']['file'][-8..-5]
     start_time: document['metadata']['start_time']
   }
 end
