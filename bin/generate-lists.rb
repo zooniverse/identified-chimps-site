@@ -134,11 +134,11 @@ db['chimp_subjects'].find({}, read: :secondary).each do |document|
       gorilla_count = species_count(document, 'gorilla')
       primate_count = species_count(document, 'other-(primate)')
 
-      if !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'chimp') or (is_verified(document) and chimp_count >= 2 and primate_count <= 2 * chimp_count))
+      if !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'chimp') or (document['state'] == 'complete' and is_verified(document) and chimp_count >= 2 and primate_count <= 2 * chimp_count))
        add_to_hash(db, aggregate_species_hash, document, 'chimpanzee')
       end
 
-      if $gorilla_sites.include?(site_name) and !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'gorilla') or (is_verified(document) and gorilla_count >= 2 and primate_count <= 2 * gorilla_count))
+      if $gorilla_sites.include?(site_name) and !mod_tags.include?('omit') and (check_list_for_string(all_tags, 'gorilla') or (document['state'] == 'complete' and is_verified(document) and gorilla_count >= 2 and primate_count <= 2 * gorilla_count))
        add_to_hash(db, aggregate_species_hash, document, 'gorilla')
       end
     end
